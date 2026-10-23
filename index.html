@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penjaga Hati: Petualangan Qalbun Salim</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f4f7f2;--card:#fff;--tx:#1d2b24;--mu:#5b6b62;--pr:#1f7a5a;--pr2:#e1f3ea;--bd:#d5e0d9;--ok:#1a7f45;--okb:#dff5e7;--no:#b3261e;--nob:#fde8e6;--gold:#b7791f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a15;--card:#18251e;--tx:#e6f0ea;--mu:#9bb0a4;--pr:#4fc795;--pr2:#1c3a2d;--bd:#2b4236;--ok:#6be09b;--okb:#17382a;--no:#ff8a80;--nob:#3b1f1d;--gold:#f0b94d}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;margin:.2em 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0}
+.mu{color:var(--mu);font-size:.92rem}
+.hud{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.pill{background:var(--pr2);color:var(--pr);border-radius:99px;padding:3px 12px;font-weight:600;font-size:.9rem}
+.map{display:grid;gap:10px}
+.zone{display:flex;gap:12px;align-items:center;border:2px solid var(--bd);border-radius:14px;padding:12px;background:var(--card);cursor:pointer;text-align:left;color:var(--tx);font:inherit;width:100%}
+.zone[disabled]{opacity:.5;cursor:not-allowed}
+.zone.done{border-color:var(--ok)}
+.zone .ic{font-size:2rem}
+button.b{background:var(--pr);color:#fff;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;margin:8px 8px 0 0}
+button.b.s{background:var(--pr2);color:var(--pr)}
+button.b[disabled]{opacity:.5}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
+.opt.on{border-color:var(--pr);background:var(--pr2)}
+.opt.ok{border-color:var(--ok);background:var(--okb)}.opt.no{border-color:var(--no);background:var(--nob)}
+.fb{border-radius:10px;padding:10px 12px;margin-top:10px}
+.fb.ok{background:var(--okb);color:var(--ok)}.fb.no{background:var(--nob);color:var(--no)}
+.bar{height:8px;background:var(--pr2);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pr)}
+.chip{display:inline-block;margin:4px;padding:7px 12px;border:2px solid var(--bd);border-radius:10px;background:var(--card);cursor:grab;font-size:.93rem}
+.chip.sel{border-color:var(--pr);background:var(--pr2)}
+.drop{min-height:70px;border:2px dashed var(--pr);border-radius:12px;padding:8px;margin:8px 0;cursor:pointer}
+.row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+select{font:inherit;padding:6px;border-radius:8px;border:2px solid var(--bd);background:var(--card);color:var(--tx);max-width:100%}
+details{margin:8px 0}summary{cursor:pointer;font-weight:600}
+li{margin:3px 0}
+</style></head>
+<body><main id="app"></main>
+<script>
+const Z=[
+{n:"Lembah Gaya Hidup",ic:"🏞️",tag:"Zona 1 · Berfoya-foya (Israf & Tabzir)",
+quest:"Mengenali ciri, dalil, dan contoh perilaku berfoya-foya (israf dan tabzir) dalam kehidupan remaja.",
+rw:"+30 poin · Lencana “Penjaga Dompet”",bd:"💰 Penjaga Dompet",
+qs:[
+{t:"pg",q:"Membelanjakan harta secara berlebihan melampaui kebutuhan, padahal tidak dilarang secara asalnya, disebut…",o:["Qana’ah","Israf","Tawadhu","Ikhlas"],a:1,e:"Israf adalah berlebih-lebihan, dilarang dalam QS. Al-A’raf: 31."},
+{t:"pg",q:"Menurut QS. Al-Isra’: 26–27, orang-orang pemboros adalah…",o:["Hamba yang dicintai Allah","Saudara-saudara setan","Orang yang pasti kaya","Penolong fakir miskin"],a:1,e:"Pemboros disebut saudara-saudara setan karena memakai harta bukan pada jalan Allah."},
+{t:"pgk",q:"Pilih SEMUA contoh perilaku berfoya-foya:",o:["Membeli skin gim jutaan rupiah dari uang SPP","Berutang demi pesta ulang tahun mewah","Menabung untuk membeli buku pelajaran","Membeli barang tak dibutuhkan hanya karena FOMO"],a:[0,1,3],e:"Menabung untuk kebutuhan belajar adalah pengelolaan harta yang baik."}
+]},
+{n:"Hutan Cermin Hati",ic:"🌲",tag:"Zona 2 · Riya & Takabur",
+quest:"Membedakan riya dan takabur serta mengenali bentuknya di dunia nyata dan media sosial.",
+rw:"+30 poin · Lencana “Hati Ikhlas”",bd:"🪞 Hati Ikhlas",
+qs:[
+{t:"tf",q:"Riya hanya bisa terjadi saat beribadah di depan orang banyak; unggahan di media sosial tidak termasuk riya.",a:false,e:"Salah. Riya bisa di mana saja, termasuk di media sosial, bila niatnya ingin dipuji."},
+{t:"tf",q:"Takabur adalah menolak kebenaran dan meremehkan orang lain (HR. Muslim).",a:true,e:"Benar. Itulah definisi takabur dalam hadis."},
+{t:"drag",q:"Seret setiap situasi ke penyakit hati yang tepat:",cats:["Riya","Takabur"],items:[["Pamer sedekah di story agar dipuji",0],["Menolak nasihat guru karena merasa paling pintar",1],["Memperlama salat saat ada yang melihat",0],["Menghina teman yang nilainya rendah",1],["Mengunggah tilawah agar dianggap saleh",0]],e:"Riya: beramal agar dilihat orang. Takabur: merasa lebih tinggi dan meremehkan orang lain."}
+]},
+{n:"Gunung Hasad",ic:"⛰️",tag:"Zona 3 · Hasad & Obatnya",
+quest:"Memahami hasad, membedakannya dari ghibtah, dan menyusun langkah mengobatinya.",
+rw:"+30 poin · Lencana “Pemadam Api Iri”",bd:"🔥 Pemadam Api Iri",
+qs:[
+{t:"pg",q:"Menurut hadis (HR. Abu Dawud), hasad memakan kebaikan seperti…",o:["Air membasahi tanah","Api memakan kayu bakar","Angin menerbangkan debu","Hujan menyuburkan tanaman"],a:1,e:"Hasad menghapus pahala kebaikan seperti api melahap kayu bakar."},
+{t:"match",q:"Jodohkan istilah dengan pengertiannya:",pairs:[["Hasad","Berharap nikmat orang lain hilang"],["Ghibtah","Ingin berprestasi seperti orang lain tanpa berharap nikmatnya hilang"],["Qana’ah","Merasa cukup dengan rezeki dari Allah"],["Tawadhu","Rendah hati, tidak merasa lebih tinggi"]],e:"Ghibtah boleh dan menjadi motivasi; hasad tercela."},
+{t:"order",q:"Urutkan langkah mengobati hasad dari awal:",items:["Menyadari dan mengakui rasa iri","Beristigfar dan mendoakan kebaikan untuk orang itu","Mensyukuri nikmat yang dimiliki","Berusaha meningkatkan diri dengan cara halal"],e:"Mulai dari kesadaran, lalu doa, syukur, dan berlomba dalam kebaikan."}
+]},
+{n:"Benteng Qalbun Salim",ic:"🏰",tag:"Zona 4 · BOSS BATTLE (HOTS)",
+quest:"Menganalisis kasus nyata dan menetapkan solusi untuk menjaga hati dari ketiga penyakit hati.",
+rw:"+80 poin · Gelar “Penjaga Hati Bersih” 🏆",bd:"🏆 Penjaga Hati Bersih",
+qs:[
+{t:"pgk",q:"KASUS: Rina juara olimpiade dan mengunggah “Aku memang paling pintar, yang lain usaha lebih keras ya.” Dina merasa kesal dan berharap Rina gagal di lomba berikutnya. Pilih SEMUA analisis yang tepat:",o:["Caption Rina menunjukkan potensi takabur","Sikap Dina termasuk hasad","Mengunggah prestasi pasti selalu riya","Rina perlu bersyukur dan tawadhu, Dina perlu beralih ke ghibtah"],a:[0,1,3],e:"Mengunggah prestasi tidak otomatis riya; yang dinilai niat dan cara penyampaiannya."},
+{t:"tf",q:"Siswa yang mengunggah prestasinya dengan niat bersyukur dan memotivasi teman pasti termasuk riya.",a:false,e:"Salah. Niat dan cara menentukan; riya bila tujuannya mencari pujian."},
+{t:"pg",q:"Strategi paling tepat menjaga hati dari berfoya-foya, riya, takabur, dan hasad sekaligus adalah…",o:["Menjauhi semua media sosial","Menanamkan ikhlas, syukur, tawadhu, hidup sederhana, dan rutin muhasabah","Menunggu hati berubah sendiri","Membandingkan diri dengan yang lebih sukses"],a:1,e:"Keempat nilai itu menjadi penawar bagi ketiga penyakit hati sekaligus."},
+{t:"pg",q:"Dina ingin mengubah hasadnya menjadi ghibtah. Tindakan paling tepat?",o:["Mengucapkan selamat dan belajar strategi Rina","Menyindir Rina di grup kelas","Menghapus unggahan Rina","Menjauhi Rina selamanya"],a:0,e:"Ghibtah diwujudkan dengan ikut senang dan berusaha lebih baik secara halal."}
+]}];
+
+const S={u:0,b:[],zs:[0,0,0,0]};let C={};const app=document.getElementById("app");
+const need=n=>Math.ceil(n*.6),tot=()=>S.zs.reduce((a,b)=>a+b,0);
+const sh=a=>a.slice().reverse();
+
+function home(){
+app.innerHTML=`<div class="hud"><h1>🕌 Penjaga Hati</h1><span class="pill">⭐ ${tot()} poin</span></div>
+<p class="mu">PAI Kelas 10 · Menghindari Penyakit Hati · ±45 menit</p>
+<div class="card"><b>Cerita:</b> Kerajaan Qalbun Salim dulu damai. Kini kabut hitam bernama <i>Al-Amrad</i> (penyakit hati) menyelimutinya: berfoya-foya, riya, takabur, dan hasad. Kamu terpilih menjadi Penjaga Hati. Taklukkan 4 zona dan kalahkan Boss agar cahaya kembali.</div>
+<div class="map">${Z.map((z,i)=>`<button class="zone ${S.b[i]?'done':''}" ${i>S.u?'disabled':''} onclick="start(${i})"><span class="ic">${i>S.u?'🔒':z.ic}</span><span><b>${z.n}</b><br><span class="mu">${z.tag}</span><br><span class="mu">🎯 ${z.quest}</span><br><span class="mu">🎁 ${z.rw}${S.b[i]?' · ✅ '+S.zs[i]+' poin':''}</span></span></button>`).join("")}</div>
+<div class="card"><b>Lencana:</b> ${S.b.some(x=>x)?Z.map((z,i)=>S.b[i]?z.bd:'').filter(Boolean).join(" · "):"belum ada"}</div>
+<details class="card"><summary>📘 Aturan Main & Panduan Guru</summary>
+<ul><li><b>Syarat lulus zona:</b> benar minimal 60% soal zona (2 dari 3; Boss: 3 dari 4). Lulus membuka zona berikutnya; belum lulus boleh mengulang zona.</li>
+<li><b>Poin:</b> 10 per soal benar (Boss 20). Poin zona diambil dari skor terbaik.</li>
+<li><b>Alokasi waktu:</b> Zona 1 (10’), Zona 2 (12’), Zona 3 (12’), Boss (11’) = 45 menit.</li>
+<li><b>Variasi soal:</b> Zona 1: PG &amp; PG Kompleks; Zona 2: Benar/Salah &amp; Drag-and-Drop; Zona 3: PG, Menjodohkan &amp; Mengurutkan; Zona 4: HOTS studi kasus.</li>
+<li><b>Mode kelas:</b> individu di gawai, atau kelompok 3–4 siswa dengan satu perangkat. Skor dicatat guru.</li>
+<li><b>Diskusi penutup (5’):</b> Kapan unggahan jadi riya? Apa bedanya ghibtah dan hasad? Rencana “muhasabah harian” apa yang akan kamu lakukan?</li>
+<li><b>Penilaian:</b> total 200 poin maksimal (30+30+30+80 = 170 poin dari 13 soal; boss 4×20).</li></ul></details>`;}
+
+function start(z){C={z,i:0,ok:0,pts:0};q();}
+function q(){const z=Z[C.z],Q=z.qs[C.i];C.Q=Q;C.done=false;C.sel=[];C.pl={};C.cs=null;
+if(Q.t=="order")C.ord=sh(Q.items.map((_,i)=>i));
+if(Q.t=="match"){C.mt=Q.pairs.map(()=>"");C.rt=sh(Q.pairs.map(p=>p[1]))}
+draw();}
+function draw(){const z=Z[C.z],Q=C.Q,n=z.qs.length;let b="";
+if(Q.t=="pg"||Q.t=="pgk"||Q.t=="tf"){const o=Q.t=="tf"?["Benar","Salah"]:Q.o;
+b=o.map((x,i)=>{let c=C.sel.includes(i)?"on":"";if(C.done){const k=Q.t=="pg"?Q.a==i:Q.t=="tf"?(Q.a?i==0:i==1):Q.a.includes(i);if(k)c="ok";else if(C.sel.includes(i))c="no"}
+return `<button class="opt ${c}" ${C.done?'disabled':''} onclick="pick(${i})">${x}</button>`}).join("");
+if(Q.t=="pgk")b+=`<p class="mu">Pilih lebih dari satu jawaban.</p>`;}
+if(Q.t=="drag"){const un=Q.items.map((x,i)=>i).filter(i=>C.pl[i]===undefined);
+b=`<p class="mu">Seret kartu ke kotak, atau ketuk kartu lalu ketuk kotak.</p><div>${un.map(i=>chip(i)).join("")}</div>`+
+Q.cats.map((c,ci)=>`<div class="drop" ondragover="event.preventDefault()" ondrop="drp(event,${ci})" onclick="put(${ci})"><b>${c}</b><br>${Q.items.map((x,i)=>C.pl[i]===ci?chip(i,1):"").join("")}</div>`).join("");}
+if(Q.t=="match"){b=Q.pairs.map((p,i)=>`<div class="row"><b>${p[0]}</b><select ${C.done?'disabled':''} onchange="C.mt[${i}]=this.value"><option value="">— pilih —</option>${C.rt.map(r=>`<option ${C.mt[i]==r?'selected':''}>${r}</option>`).join("")}</select></div>`).join("");}
+if(Q.t=="order"){b=C.ord.map((x,k)=>`<div class="row"><span class="pill">${k+1}</span><span style="flex:1">${Q.items[x]}</span><button class="b s" style="margin:0" ${C.done?'disabled':''} onclick="mv(${k},-1)">▲</button><button class="b s" style="margin:0" ${C.done?'disabled':''} onclick="mv(${k},1)">▼</button></div>`).join("");}
+app.innerHTML=`<div class="hud"><button class="b s" onclick="home()">← Peta</button><span class="pill">${z.ic} ${z.n}</span><span class="pill">⭐ ${C.pts}</span></div>
+<div class="bar" style="margin:10px 0"><i style="width:${(C.i/n)*100}%"></i></div>
+<div class="card"><p class="mu">Soal ${C.i+1}/${n} · ${({pg:"Pilihan Ganda",pgk:"PG Kompleks",tf:"Benar/Salah",drag:"Drag and Drop",match:"Menjodohkan",order:"Mengurutkan"})[Q.t]}${C.z==3?" · HOTS":""}</p><h2>${Q.q}</h2>${b}
+<div id="fb">${C.fb||""}</div>
+${C.done?`<button class="b" onclick="nxt()">${C.i+1<n?"Lanjut →":"Selesai zona"}</button>`:`<button class="b" onclick="chk()">Periksa</button>`}</div>`;C.fb="";}
+function chip(i,p){return `<span class="chip ${C.cs===i?'sel':''}" draggable="${!C.done}" ondragstart="event.dataTransfer.setData('t',${i})" onclick="event.stopPropagation();${p?`ret(${i})`:`C.cs=${i};draw()`}">${C.Q.items[i][0]}</span>`}
+function drp(e,ci){e.preventDefault();C.pl[+e.dataTransfer.getData("t")]=ci;draw()}
+function put(ci){if(C.done||C.cs===null)return;C.pl[C.cs]=ci;C.cs=null;draw()}
+function ret(i){if(C.done)return;delete C.pl[i];draw()}
+function mv(k,d){const j=k+d;if(j<0||j>=C.ord.length)return;[C.ord[k],C.ord[j]]=[C.ord[j],C.ord[k]];draw()}
+function pick(i){if(C.done)return;const t=C.Q.t;if(t=="pgk"){const k=C.sel.indexOf(i);k<0?C.sel.push(i):C.sel.splice(k,1)}else C.sel=[i];draw()}
+function chk(){const Q=C.Q;let ok=false;
+if(Q.t=="pg")ok=C.sel[0]===Q.a;
+if(Q.t=="tf")ok=C.sel.length&&((C.sel[0]==0)==Q.a);
+if(Q.t=="pgk")ok=C.sel.length==Q.a.length&&Q.a.every(x=>C.sel.includes(x));
+if(Q.t=="drag")ok=Q.items.every((x,i)=>C.pl[i]===x[1]);
+if(Q.t=="match")ok=Q.pairs.every((p,i)=>C.mt[i]===p[1]);
+if(Q.t=="order")ok=C.ord.every((x,k)=>x===k);
+if(Q.t=="pg"||Q.t=="tf"){if(!C.sel.length)return}
+C.done=true;const v=C.z==3?20:10;if(ok){C.ok++;C.pts+=v}
+C.fb=`<div class="fb ${ok?'ok':'no'}">${ok?"✅ Benar! +"+v+" poin. ":"❌ Belum tepat. "}${Q.e}</div>`;draw()}
+function nxt(){C.i++;if(C.i<Z[C.z].qs.length)q();else fin()}
+function fin(){const z=Z[C.z],n=z.qs.length,pass=C.ok>=need(n);
+if(pass){S.b[C.z]=1;S.zs[C.z]=Math.max(S.zs[C.z],C.pts);if(C.z==S.u&&S.u<3)S.u++;}
+const end=pass&&C.z==3;
+app.innerHTML=`<div class="card" style="text-align:center"><div style="font-size:3rem">${pass?(end?"🏆":"🎉"):"💪"}</div>
+<h2>${pass?(end?"Qalbun Salim Terselamatkan!":"Zona Selesai!"):"Belum lulus zona"}</h2>
+<p>Benar ${C.ok} dari ${n} (syarat minimal ${need(n)}) · +${C.pts} poin</p>
+${pass?`<p><b>Lencana:</b> ${z.bd}</p>`:`<p class="mu">Pelajari penjelasannya, lalu coba lagi.</p>`}
+${end?`<p>Total skor: <b>${tot()}</b> poin. Kamu resmi menjadi <b>Penjaga Hati Bersih</b>. Jaga niat, syukuri nikmat, dan rendahkan hati.</p>`:""}
+<button class="b" onclick="home()">Kembali ke peta</button>${pass?"":`<button class="b s" onclick="start(${C.z})">Ulangi zona</button>`}</div>`}
+home();
+</script></body></html>
